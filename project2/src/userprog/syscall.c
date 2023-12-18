@@ -61,8 +61,10 @@ syscall_handler (struct intr_frame *f UNUSED)
     lock_init(&file_system_lock);
     FILE_LOCK_INIT = true;
   }
+  
   int arg[MAX_ARGS];
   int esp = getpage_ptr((const void *) f->esp);
+  
   switch (* (int *) esp)
   {
     case SYS_HALT:
@@ -207,12 +209,14 @@ syscall_handler (struct intr_frame *f UNUSED)
   }
 }
 
+/* halt */
 void
 syscall_halt (void)
 {
   shutdown_power_off(); // from shutdown.h
 }
 
+/* get arguments from stack */
 void
 get_args (struct intr_frame *f, int *args, int num_of_args)
 {
@@ -226,7 +230,10 @@ get_args (struct intr_frame *f, int *args, int num_of_args)
   }
 }
 
-
+/* System call exit 
+ * Checks if the current thread to exit is a child.
+ * If so update the child's parent information accordingly.
+ */
 void
 syscall_exit (int status)
 {
@@ -243,7 +250,11 @@ syscall_exit (int status)
   thread_exit();
 }
 
-
+/* syscall exec
+ * Executes the command line and returns 
+ * the pid of the thread currently executing
+ * the command.
+ */
 pid_t
 syscall_exec(const char* cmdline)
 {
@@ -267,12 +278,14 @@ syscall_exec(const char* cmdline)
     return pid;
 }
 
+/* wait */
 int
 syscall_wait(pid_t pid)
 {
   return process_wait(pid);
 }
 
+/* syscall_create */
 bool
 syscall_create(const char* file_name, unsigned starting_size)
 {

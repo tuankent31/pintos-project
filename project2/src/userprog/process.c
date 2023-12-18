@@ -60,6 +60,7 @@ start_process (void *file_name_)
   struct intr_frame if_;
   bool success;
   char *saveptr;
+  //const char *sp = ' ';
   file_name = strtok_r ((char*)file_name, " ", &saveptr);
   
   /* Initialize interrupt frame and load executable. */
